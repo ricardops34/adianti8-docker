@@ -1,0 +1,53 @@
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile-db
+    container_name: adianti_db
+    restart: always
+    environment:
+      POSTGRES_DB: adianti
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./app/database:/docker-entrypoint-initdb.d  # Copia os arquivos SQL para inicialização do PostgreSQL
+    ports:
+      - "5432:5432"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: adianti_app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_HOST: db
+      DATABASE_NAME: adianti
+      DATABASE_USER: admin
+      DATABASE_PASSWORD: admin
+    volumes:
+      - .:/var/www/html  # Monta o diretório do projeto dentro do container PHP
+    ports:
+      - "8080:80"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: adianti_pgadmin
+    restart: always
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"  # Acessível via http://localhost:5050
+
+volumes:
+  pgdata:
+  pgadmin-data:
