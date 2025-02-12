@@ -1,0 +1,14 @@
+# Usar a imagem oficial do PostgreSQL
+FROM postgres:15
+
+# Definir variáveis de ambiente (mude conforme necessário)
+ENV POSTGRES_DB=adianti
+ENV POSTGRES_USER=admin
+ENV POSTGRES_PASSWORD=admin
+
+# Criar diretório para os scripts SQL e copiar todos os arquivos da pasta app/database
+RUN mkdir -p /docker-entrypoint-initdb.d
+COPY app/database/*.sql /docker-entrypoint-initdb.d/
+
+# Expor a porta padrão do PostgreSQL
+EXPOSE 5432
