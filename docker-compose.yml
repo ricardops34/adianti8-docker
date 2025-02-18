@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./app/database:/docker-entrypoint-initdb.d  # Copia os arquivos SQL para inicialização do PostgreSQL
     ports:
       - "5432:5432"
@@ -37,17 +37,19 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     container_name: adianti_pgadmin
-    restart: always
-    depends_on:
-      - db
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
+      PGADMIN_CONFIG_SERVER_MODE: "True"
     ports:
       - "5050:80"  # Acessível via http://localhost:5050
+    depends_on:
+      - db
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./servers.json:/pgadmin4/servers.json  # Montar o arquivo de configuração
+    restart: always
 
 volumes:
-  pgdata:
-  pgadmin-data:
+  postgres_data:
+  pgadmin_data:  # Definição do volume que estava faltando
