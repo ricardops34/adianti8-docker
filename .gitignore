@@ -1,2 +1,5 @@
-/lib
-/vendor
+# /lib
+# /vendor
+/tmp
+/app/images
+/files/system
