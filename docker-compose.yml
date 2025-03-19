@@ -31,6 +31,7 @@ services:
       DATABASE_PASSWORD: admin
     volumes:
       - .:/var/www/html  # Monta o diretório do projeto dentro do container PHP
+      - ./php/php.ini:/usr/local/etc/php/php.ini  # Volume para editar o php.ini
     ports:
       - "8080:80"
 
