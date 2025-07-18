@@ -7,8 +7,10 @@ services:
       dockerfile: Dockerfile
     image: php:8.4-apache      
     volumes:
-      - adianti_html:/var/www/html  # Monta o diretório do projeto dentro do container PHP
-      - adianti_php:/usr/local/etc/php  # Volume para editar o php.ini
+      - .:/var/www/html  # Monta o diretório do projeto dentro do container PHP
+      - ./php/php.ini:/usr/local/etc/php/php.ini  # Volume para editar o php.ini
+      #- adianti_html:/var/www/html  # Monta o diretório do projeto dentro do container PHP
+      #- adianti_php:/usr/local/etc/php  # Volume para editar o php.ini
     ports:
       - "8080:80"
     networks:
