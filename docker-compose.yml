@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-db
-    container_name: adianti_db
+    #container_name: adianti_db
     restart: always
     environment:
       POSTGRES_DB: adianti
