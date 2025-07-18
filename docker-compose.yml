@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     #container_name: adianti_app
-    restart: always
+    #restart: always
     #depends_on:
     #  - db
     #environment:
