@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: php:8.4-apache      
     volumes:
       - adianti_html:/var/www/html  # Monta o diretório do projeto dentro do container PHP
       - adianti_php:/usr/local/etc/php  # Volume para editar o php.ini
