@@ -1,20 +1,21 @@
 version: "3.7"
 
 services:
-  adianti_app:
+  ${DOC_NAME}_app:
     build:
       context: .
       dockerfile: Dockerfile
     image: php:8.4-apache      
     volumes:
-      - .:/var/www/html  # Monta o diretório do projeto dentro do container PHP
-      - ./php/php.ini:/usr/local/etc/php/php.ini  # Volume para editar o php.ini
-      #- adianti_html:/var/www/html  # Monta o diretório do projeto dentro do container PHP
-      #- adianti_php:/usr/local/etc/php  # Volume para editar o php.ini
+      #- .:/var/www/html  # Monta o diretório do projeto dentro do container PHP
+      #- ./php/php.ini:/usr/local/etc/php/php.ini  # Volume para editar o php.ini
+      - ${DOC_NAME}_html:/var/www/html  # Monta o diretório do projeto dentro do container PHP
+      - ${DOC_NAME}_php:/usr/local/etc/php  # Volume para editar o php.ini
     ports:
       - "8080:80"
     networks:
-      - network_public      
+      #- network_public
+      - ${DOC_NET}
     tty: true
     deploy:
       mode: replicated
@@ -24,20 +25,21 @@ services:
           - node.role == manager
       labels:
         - traefik.enable=true
-        - traefik.http.routers.adianti_app.rule=Host(`${URL_TRAEFIK}`)
-        - traefik.http.routers.adianti_app.entrypoints=websecure
-        - traefik.http.routers.adianti_app.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.adianti_app.service=portal
-        - traefik.http.services.adianti_app.loadbalancer.server.port=80
-        - traefik.http.services.adianti_app.loadbalancer.passHostHeader=true
+        - traefik.http.routers.${DOC_NAME}_app.rule=Host(`${URL_TRAEFIK}`)
+        - traefik.http.routers.${DOC_NAME}_app.entrypoints=websecure
+        - traefik.http.routers.${DOC_NAME}_app.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.${DOC_NAME}_app.service=portal
+        - traefik.http.services.${DOC_NAME}_app.loadbalancer.server.port=80
+        - traefik.http.services.${DOC_NAME}_app.loadbalancer.passHostHeader=true
  
 volumes:
-  adianti_html:
+  ${DOC_NAME}_html:
     external: true
-    name: adianti_html      
-  adianti_php:
+    name: ${DOC_NAME}_html      
+  ${DOC_NAME}_php:
     external: true
-    name: adianti_php 
+    name: ${DOC_NAME}_php 
+    
 networks:
-  network_public:
+  ${DOC_NET}:
     external: true  
