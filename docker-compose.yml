@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  ${DOC_NAME}_app:
+  ${DOC_NAME}:
     build:
       context: .
       dockerfile: Dockerfile
@@ -25,12 +25,12 @@ services:
           - node.role == manager
       labels:
         - traefik.enable=true
-        - traefik.http.routers.${DOC_NAME}_app.rule=Host(`${URL_TRAEFIK}`)
-        - traefik.http.routers.${DOC_NAME}_app.entrypoints=websecure
-        - traefik.http.routers.${DOC_NAME}_app.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.${DOC_NAME}_app.service=portal
-        - traefik.http.services.${DOC_NAME}_app.loadbalancer.server.port=80
-        - traefik.http.services.${DOC_NAME}_app.loadbalancer.passHostHeader=true
+        - traefik.http.routers.${DOC_NAME}.rule=Host(`${URL_TRAEFIK}`)
+        - traefik.http.routers.${DOC_NAME}.entrypoints=websecure
+        - traefik.http.routers.${DOC_NAME}.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.${DOC_NAME}.service=portal
+        - traefik.http.services.${DOC_NAME}.loadbalancer.server.port=80
+        - traefik.http.services.${DOC_NAME}.loadbalancer.passHostHeader=true
  
 volumes:
   ${DOC_NAME}_html:
