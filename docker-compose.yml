@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  ${DOC_NAME}:
+  portal:
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,13 +9,13 @@ services:
     volumes:
       #- .:/var/www/html  # Monta o diretório do projeto dentro do container PHP
       #- ./php/php.ini:/usr/local/etc/php/php.ini  # Volume para editar o php.ini
-      - ${DOC_NAME}_html:/var/www/html  # Monta o diretório do projeto dentro do container PHP
-      - ${DOC_NAME}_php:/usr/local/etc/php  # Volume para editar o php.ini
+      - portal_html:/var/www/html  # Monta o diretório do projeto dentro do container PHP
+      - portal_php:/usr/local/etc/php  # Volume para editar o php.ini
     ports:
       - "8080:80"
     networks:
       #- network_public
-      - ${DOC_NET}
+      - network_public
     tty: true
     deploy:
       mode: replicated
@@ -25,21 +25,21 @@ services:
           - node.role == manager
       labels:
         - traefik.enable=true
-        - traefik.http.routers.${DOC_NAME}.rule=Host(`${URL_TRAEFIK}`)
-        - traefik.http.routers.${DOC_NAME}.entrypoints=websecure
-        - traefik.http.routers.${DOC_NAME}.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.${DOC_NAME}.service=portal
-        - traefik.http.services.${DOC_NAME}.loadbalancer.server.port=80
-        - traefik.http.services.${DOC_NAME}.loadbalancer.passHostHeader=true
+        - traefik.http.routers.portal.rule=Host(`portal.bjsoft.com.br`)
+        - traefik.http.routers.portal.entrypoints=websecure
+        - traefik.http.routers.portal.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.portal.service=portal
+        - traefik.http.services.portal.loadbalancer.server.port=80
+        - traefik.http.services.portal.loadbalancer.passHostHeader=true
  
 volumes:
-  ${DOC_NAME}_html:
+  portal_html:
     external: true
-    name: ${DOC_NAME}_html      
-  ${DOC_NAME}_php:
+    name: portal_html      
+  portal_php:
     external: true
-    name: ${DOC_NAME}_php 
+    name: portal_php 
     
 networks:
-  ${DOC_NET}:
+  network_public:
     external: true  
