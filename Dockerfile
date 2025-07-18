@@ -18,15 +18,27 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libzip-dev \
     unzip \
-    libpq-dev
+    libpq-dev \
+    zip \
+    nano \
+    vim \
+    apache2-utils \
+    pwgen \
+    htop
 
 # Habilitar extensões do PHP necessárias para o Adianti Framework
 RUN docker-php-ext-install \
     gd \
     mysqli \
+    mbstring \
     pdo_mysql \
     pdo_pgsql \
     zip \
+    opcache \
+    gd \
+    soap \
+    xml \
+    sockets \
     intl 
 
 # Instalar o Composer
@@ -35,6 +47,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Alias para rodar o Composer sem configurações extras
 RUN alias composer="php -n /usr/local/bin/composer"
 
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
+    
 # Ativar o mod_rewrite do Apache (necessário para o Adianti Framework)
 RUN a2enmod rewrite
 
