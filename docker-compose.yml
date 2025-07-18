@@ -1,56 +1,82 @@
 
 services:
-  db:
-    build:
-      context: .
-      dockerfile: Dockerfile-db
-    #container_name: adianti_db
-    restart: always
-    environment:
-      POSTGRES_DB: adianti
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./app/database:/docker-entrypoint-initdb.d  # Copia os arquivos SQL para inicialização do PostgreSQL
-    ports:
-      - "5432:5432"
-
-  app:
+  adianti_app:
     build:
       context: .
       dockerfile: Dockerfile
     #container_name: adianti_app
     restart: always
-    depends_on:
-      - db
+    #depends_on:
+    #  - db
     environment:
-      DATABASE_HOST: db
-      DATABASE_NAME: adianti
-      DATABASE_USER: admin
-      DATABASE_PASSWORD: admin
+    #  DATABASE_HOST: db
+    #  DATABASE_NAME: adianti
+    #  DATABASE_USER: admin
+    #  DATABASE_PASSWORD: admin
     volumes:
-      - .:/var/www/html  # Monta o diretório do projeto dentro do container PHP
-      - ./php/php.ini:/usr/local/etc/php/php.ini  # Volume para editar o php.ini
+      - adianti_html:/var/www/html  # Monta o diretório do projeto dentro do container PHP
+      - adianti_php:/usr/local/etc/php  # Volume para editar o php.ini
     ports:
       - "8080:80"
+    networks:
+      - network_public      
+    tty: true
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.adianti_app.rule=Host(`${URL_TRAEFIK}`)
+        - traefik.http.routers.adianti_app.entrypoints=websecure
+        - traefik.http.routers.adianti_app.tls.certresolver=letsencryptresolver
+        - traefik.http.routers.adianti_app.service=portal
+        - traefik.http.services.adianti_app.loadbalancer.server.port=80
+        - traefik.http.services.adianti_app.loadbalancer.passHostHeader=true
 
-  pgadmin:
-    image: dpage/pgadmin4
-    #container_name: adianti_pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: "True"
-    ports:
-      - "5050:80"  # Acessível via http://localhost:5050
-    depends_on:
-      - db
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
-      - ./servers.json:/pgadmin4/servers.json  # Montar o arquivo de configuração
-    restart: always
+  #db:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile-db
+  #  #container_name: adianti_db
+  #  restart: always
+  #  environment:
+  #    POSTGRES_DB: adianti
+  #    POSTGRES_USER: admin
+  #    POSTGRES_PASSWORD: admin
+  #  volumes:
+  #    - postgres_data:/var/lib/postgresql/data
+  #    - ./app/database:/docker-entrypoint-initdb.d  # Copia os arquivos SQL para inicialização do PostgreSQL
+  #  ports:
+  #    - "5432:5432"
+      
+  #pgadmin:
+  #  image: dpage/pgadmin4
+  #  #container_name: adianti_pgadmin
+  #  environment:
+  #    PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #    PGADMIN_DEFAULT_PASSWORD: admin
+  #    PGADMIN_CONFIG_SERVER_MODE: "True"
+  #  ports:
+  #    - "5050:80"  # Acessível via http://localhost:5050
+  #  depends_on:
+  #    - db
+  #  volumes:
+  #    - pgadmin_data:/var/lib/pgadmin
+  #    - ./servers.json:/pgadmin4/servers.json  # Montar o arquivo de configuração
+  #  restart: always
 
 volumes:
-  postgres_data:
-  pgadmin_data:  # Definição do volume que estava faltando
+  adianti_html:
+    external: true
+    name: adianti_html      
+  adianti_php:
+    external: true
+    name: adianti_php 
+  #postgres_data:
+  #pgadmin_data:  # Definição do volume que estava faltando
+networks:
+  network_public:
+    external: true  
